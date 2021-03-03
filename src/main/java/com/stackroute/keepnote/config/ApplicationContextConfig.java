@@ -1,5 +1,19 @@
 package com.stackroute.keepnote.config;
 
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
 /*This class will contain the application-context for the application. 
  * Define the following annotations:
  * @Configuration - Annotating a class with the @Configuration indicates that the 
@@ -8,6 +22,11 @@ package com.stackroute.keepnote.config;
  * @EnableTransactionManagement - Enables Spring's annotation-driven transaction management capability.
  *                  
  * */
+@Configuration
+@ComponentScan(basePackages= {"com.stackroute.keepnote"})
+@EnableWebMvc
+@EnableTransactionManagement
+
 
 public class ApplicationContextConfig {
 
@@ -24,11 +43,43 @@ public class ApplicationContextConfig {
 				+"?verifyServerCertificate=false&useSSL=false&requireSSL=false");
 		dataSource.setUsername(System.getenv("MYSQL_USER"));
 		dataSource.setPassword(System.getenv("MYSQL_PASSWORD")); */
+	@Bean
+	public DataSource getDataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql://localhost:3306/keepnote2DB?createDatabaseIfNotExist=true&"
+				+ "verifyServerCertificate=false&useSSL=false&requireSSL=false");
+		dataSource.setUsername("root");
+		dataSource.setPassword("Chirag@0297");
+		return dataSource;
+	}
 
-	/*
-	 * Define the bean for SessionFactory. Hibernate SessionFactory is the factory
-	 * class through which we get sessions and perform database operations.
-	 */
+	
+	
+	@Bean
+	public SessionFactory getSessionFactory(DataSource dataSource) {
+		LocalSessionFactoryBuilder sfBuilder = new LocalSessionFactoryBuilder(dataSource);
+		sfBuilder.scanPackages("com.stackroute.keepnote.model");
+		sfBuilder.addProperties(getHibernateProperties());
+		return sfBuilder.buildSessionFactory();
+	}
+	private Properties getHibernateProperties() {
+		Properties prop = new Properties();
+		prop.put("hibernate.dialect","org.hibernate.dialect.MySQL5InnoDBDialect");
+		prop.put("hibernate.show_sql","true");
+		prop.put("hibernate.format_sql","true");
+		prop.put("hibernate.hbm2ddl.auto","create");
+		return prop;
+	}
+	@Bean
+	public HibernateTransactionManager getTransactionManager(SessionFactory sessionFactory) {
+		HibernateTransactionManager htm = new HibernateTransactionManager(sessionFactory);
+		return htm;
+	}
+	
+
+
+	
 
 	/*
 	 * Define the bean for Transaction Manager. HibernateTransactionManager handles
