@@ -6,13 +6,14 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
 
 /*This class will contain the application-context for the application. 
  * Define the following annotations:
@@ -23,8 +24,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  *                  
  * */
 @Configuration
-@ComponentScan(basePackages= {"com.stackroute.keepnote"})
-@EnableWebMvc
+
 @EnableTransactionManagement
 
 
@@ -44,19 +44,24 @@ public class ApplicationContextConfig {
 		dataSource.setUsername(System.getenv("MYSQL_USER"));
 		dataSource.setPassword(System.getenv("MYSQL_PASSWORD")); */
 	@Bean
+	@Autowired
 	public DataSource getDataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		dataSource.setUrl("jdbc:mysql://localhost:3306/keepnote2DB?createDatabaseIfNotExist=true&"
-				+ "verifyServerCertificate=false&useSSL=false&requireSSL=false");
-		dataSource.setUsername("root");
-		dataSource.setPassword("Chirag@0297");
-		return dataSource;
+		
+		  BasicDataSource dataSource = new BasicDataSource();
+		  dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver"); dataSource.setUrl(
+		  "jdbc:mysql://localhost:3306/keepnote2DB?createDatabaseIfNotExist=true&" +
+		  "verifyServerCertificate=false&useSSL=false&requireSSL=false");
+		  dataSource.setUsername("root"); 
+		  dataSource.setPassword("Chirag@0297"); 
+		  return dataSource;
+		 
+		
 	}
 
 	
 	
 	@Bean
+	@Autowired
 	public SessionFactory getSessionFactory(DataSource dataSource) {
 		LocalSessionFactoryBuilder sfBuilder = new LocalSessionFactoryBuilder(dataSource);
 		sfBuilder.scanPackages("com.stackroute.keepnote.model");
@@ -72,6 +77,7 @@ public class ApplicationContextConfig {
 		return prop;
 	}
 	@Bean
+	@Autowired
 	public HibernateTransactionManager getTransactionManager(SessionFactory sessionFactory) {
 		HibernateTransactionManager htm = new HibernateTransactionManager(sessionFactory);
 		return htm;

@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * */
 
 @Configuration
-@ComponentScan
+@ComponentScan(basePackages = {"com.stackroute.keepnote"})
 @EnableWebMvc 
 public class WebMvcConfig implements WebMvcConfigurer {
 
