@@ -78,7 +78,7 @@ public class NoteDAOImpl implements NoteDAO {
 	/* Update existing note */
 
 	public boolean UpdateNote(Note note) {
-		getSession().saveOrUpdate(note) ;
+		getSession().update(note) ;
 		return true;
 
 	}

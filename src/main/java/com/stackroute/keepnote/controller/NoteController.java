@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.stackroute.keepnote.dao.NoteDAO;
@@ -67,7 +68,10 @@ public class NoteController {
 	@PostMapping("/add")
 	public String addNote(@ModelAttribute("note") Note note,ModelMap model) 
 	{
-		notedao.saveNote(note);
+		if(note.getNoteTitle().isEmpty()||note.getNoteContent().isEmpty()||note.getNoteStatus().isEmpty())
+			return "index";
+		else
+			notedao.saveNote(note);
 		return "redirect:/";
 	}
 	/*
@@ -81,25 +85,25 @@ public class NoteController {
 		notedao.deleteNote(noteId);
 		return "redirect:/";
 	}
-	@PostMapping("/updateNote")
-	public String updatenote(@RequestParam int noteId,ModelMap model)
-	{
-		model.addAttribute("note",notedao.getNoteById(noteId));
-		
-		return "update";
-	}
+	
 
 	/*
 	 * Define a handler method which will update the existing note. This handler
 	 * method should map to the URL "/update".
 	 */
-	@PostMapping("/update")
-	public String update(@RequestParam Note note,ModelMap model)
+	@RequestMapping("/update")
+	public String update(@RequestParam("noteId") int noteId,@RequestParam("noteTitle") String noteTitle,
+			@RequestParam("noteContent") String noteContent,@RequestParam("noteStatus") String noteStatus)
 	{
+		Note note = new Note();
+		note.setNoteId(noteId);
+		note.setNoteTitle(noteTitle);
+		note.setNoteContent(noteContent);
+		note.setNoteStatus(noteStatus);
 		notedao.UpdateNote(note);
-		
-		
 		return "redirect:/";
+		
+		
 	}
 
 }
